@@ -1,0 +1,60 @@
+from __future__ import annotations
+
+import json
+import time
+from functools import wraps
+from pathlib import Path
+from typing import Any, Callable
+
+from .artifacts import write_run_artifacts
+from .expectations import evaluate_expectations
+
+
+def step(name: str) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+        @wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            started = time.time()
+            status = "success"
+            output: Any = None
+            error: str | None = None
+            failures: list[str] = []
+            try:
+                output = func(*args, **kwargs)
+                expectations = list(getattr(wrapper, "__flowguard_expectations__", []))
+                failures = evaluate_expectations(output, expectations)
+                if failures:
+                    status = "failed"
+                return output
+            except Exception as exc:
+                status = "error"
+                error = repr(exc)
+                raise
+            finally:
+                duration_ms = round((time.time() - started) * 1000)
+                write_run_artifacts(
+                    {
+                        "step": name,
+                        "status": status,
+                        "duration_ms": duration_ms,
+                        "input_summary": _summarize({"args": args, "kwargs": kwargs}),
+                        "output_summary": _summarize(output),
+                        "failures": failures,
+                        "error": error,
+                    }
+                )
+
+        setattr(wrapper, "__flowguard_expectations__", list(getattr(func, "__flowguard_expectations__", [])))
+        setattr(wrapper, "__flowguard_step__", name)
+        return wrapper
+
+    return decorator
+
+
+def _summarize(value: Any) -> str:
+    try:
+        text = json.dumps(value, ensure_ascii=False, default=str)
+    except TypeError:
+        text = repr(value)
+    return text[:1000]
+
