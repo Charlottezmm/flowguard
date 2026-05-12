@@ -27,25 +27,30 @@ Use FlowGuard to map this workflow, inspect the failed run, and create a repair 
 ```md
 # Agent Context
 
-Failed step: storyboard.generate
+Failed step: issue.triage
 
 Failed checks:
-- shots must contain at least 5 items
-- shot_03 missing vo_text
+- repro_steps must contain at least 2 items
+- affected_files must contain at least 1 items
 
 Downstream impacted:
-- image_prompts.generate
-- voiceover.generate
-- video.render
+- repair_brief.create
 
 Relevant files:
-- workflows/video.py
-- schemas/storyboard.json
-- prompts/storyboard.md
+- examples/github_issue_triage/pipeline.py
 
 Suggested focus:
-Check prompt constraints and schema mapping.
+Add enough reproduction steps and affected files before handing off to a coding agent.
 ```
+
+## Demo
+
+```bash
+PYTHONPATH=src python examples/github_issue_triage/pipeline.py
+PYTHONPATH=src python -m flowguard.cli
+```
+
+The demo intentionally returns an incomplete issue triage result. FlowGuard catches the silent failure and writes `.flowguard/runs/latest/agent_context.md`.
 
 ## Status
 
@@ -56,4 +61,3 @@ FlowGuard is experimental. v0.1 focuses on Python AI workflows, local artifacts,
 - v0.1: Skill draft, Python runtime, workflow map, trace, agent context.
 - v0.2: API/file checks, golden runs, minimal MCP query layer.
 - v1.0: stable Skill + runtime + MCP, run comparison, real-world case study.
-
