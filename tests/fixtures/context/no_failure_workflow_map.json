@@ -1,0 +1,14 @@
+{
+  "workflow": "clean_demo",
+  "steps": [
+    {
+      "id": "issue.parse",
+      "name": "issue.parse",
+      "index": 0,
+      "status": "success",
+      "source": "examples/github_issue_triage/pipeline.py",
+      "upstream": [],
+      "downstream": []
+    }
+  ]
+}

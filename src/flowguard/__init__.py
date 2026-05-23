@@ -1,5 +1,4 @@
 from .expectations import expect
-from .runtime import step
+from .runtime import flowguard_run, step
 
-__all__ = ["expect", "step"]
-
+__all__ = ["expect", "flowguard_run", "step"]

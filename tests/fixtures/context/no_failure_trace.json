@@ -1,0 +1,19 @@
+{
+  "run_id": "latest",
+  "workflow": "clean_demo",
+  "started_at": "2026-05-12T13:00:00+00:00",
+  "updated_at": "2026-05-12T13:00:01+00:00",
+  "steps": [
+    {
+      "id": "issue.parse",
+      "name": "issue.parse",
+      "status": "success",
+      "duration_ms": 0,
+      "source": "examples/github_issue_triage/pipeline.py",
+      "input_summary": "{\"args\": [\"raw issue\"], \"kwargs\": {}}",
+      "output_summary": "{\"title\": \"Bug\"}",
+      "failures": [],
+      "error": null
+    }
+  ]
+}

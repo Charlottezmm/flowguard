@@ -1,0 +1,32 @@
+{
+  "workflow": "github_issue_triage",
+  "steps": [
+    {
+      "id": "issue.parse",
+      "name": "issue.parse",
+      "index": 0,
+      "status": "success",
+      "source": "examples/github_issue_triage/pipeline.py",
+      "upstream": [],
+      "downstream": ["issue.triage"]
+    },
+    {
+      "id": "issue.triage",
+      "name": "issue.triage",
+      "index": 1,
+      "status": "failed",
+      "source": "examples/github_issue_triage/pipeline.py",
+      "upstream": ["issue.parse"],
+      "downstream": ["repair_brief.create"]
+    },
+    {
+      "id": "repair_brief.create",
+      "name": "repair_brief.create",
+      "index": 2,
+      "status": "success",
+      "source": "examples/github_issue_triage/pipeline.py",
+      "upstream": ["issue.triage"],
+      "downstream": []
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "run_id": "latest",
+  "workflow": "github_issue_triage",
+  "started_at": "2026-05-12T13:00:00+00:00",
+  "updated_at": "2026-05-12T13:00:01+00:00",
+  "steps": [
+    {
+      "id": "issue.parse",
+      "name": "issue.parse",
+      "status": "success",
+      "duration_ms": 0,
+      "source": "examples/github_issue_triage/pipeline.py",
+      "input_summary": "{\"args\": [\"raw issue\"], \"kwargs\": {}}",
+      "output_summary": "{\"title\": \"Bug\", \"body\": \"raw issue\"}",
+      "failures": [],
+      "error": null
+    },
+    {
+      "id": "issue.triage",
+      "name": "issue.triage",
+      "status": "failed",
+      "duration_ms": 1,
+      "source": "examples/github_issue_triage/pipeline.py",
+      "input_summary": "{\"args\": [{\"title\": \"Bug\", \"body\": \"raw issue\"}], \"kwargs\": {}}",
+      "output_summary": "{\"issue_type\": \"bug\", \"severity\": \"medium\", \"repro_steps\": [\"Run demo\"], \"affected_files\": []}",
+      "failures": [
+        "affected_files must contain at least 1 items",
+        "repro_steps must contain at least 2 items"
+      ],
+      "error": null
+    },
+    {
+      "id": "repair_brief.create",
+      "name": "repair_brief.create",
+      "status": "success",
+      "duration_ms": 0,
+      "source": "examples/github_issue_triage/pipeline.py",
+      "input_summary": "{\"args\": [{\"issue_type\": \"bug\"}], \"kwargs\": {}}",
+      "output_summary": "{\"summary\": \"Incomplete triage\"}",
+      "failures": [],
+      "error": null
+    }
+  ]
+}

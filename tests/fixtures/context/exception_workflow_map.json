@@ -1,0 +1,23 @@
+{
+  "workflow": "exception_demo",
+  "steps": [
+    {
+      "id": "issue.parse",
+      "name": "issue.parse",
+      "index": 0,
+      "status": "success",
+      "source": "examples/github_issue_triage/pipeline.py",
+      "upstream": [],
+      "downstream": ["issue.triage"]
+    },
+    {
+      "id": "issue.triage",
+      "name": "issue.triage",
+      "index": 1,
+      "status": "error",
+      "source": "examples/github_issue_triage/pipeline.py",
+      "upstream": ["issue.parse"],
+      "downstream": []
+    }
+  ]
+}

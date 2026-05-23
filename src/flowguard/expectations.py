@@ -42,6 +42,20 @@ class expect:
 
         return decorator
 
+    @staticmethod
+    def non_empty(path: str | None = None) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+        def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+            return _attach_expectation(func, Expectation("non_empty", {"path": path}))
+
+        return decorator
+
+    @staticmethod
+    def max_length(path: str | None, length: int) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+        def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+            return _attach_expectation(func, Expectation("max_length", {"path": path, "length": length}))
+
+        return decorator
+
 
 def evaluate_expectations(output: Any, expectations: list[Expectation]) -> list[str]:
     failures: list[str] = []
@@ -60,7 +74,33 @@ def evaluate_expectations(output: Any, expectations: list[Expectation]) -> list[
                 failures.append(f"{item.params['path']} must contain at least {item.params['count']} items")
         elif item.kind == "required_fields":
             failures.extend(_check_required_fields(output, item.params["path"], item.params["fields"]))
+        elif item.kind == "non_empty":
+            value = _resolve_output(output, item.params["path"])
+            if not _has_content(value):
+                label = item.params["path"] or "output"
+                failures.append(f"{label} must not be empty")
+        elif item.kind == "max_length":
+            value = _resolve_output(output, item.params["path"])
+            if not hasattr(value, "__len__") or len(value) > item.params["length"]:
+                label = item.params["path"] or "output"
+                failures.append(f"{label} must contain at most {item.params['length']} items")
     return failures
+
+
+def _resolve_output(output: Any, path: str | None) -> Any:
+    if path is None:
+        return output
+    return _get_path(output, path)
+
+
+def _has_content(value: Any) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, str):
+        return bool(value.strip())
+    if hasattr(value, "__len__"):
+        return len(value) > 0
+    return True
 
 
 def _get_path(value: Any, path: str) -> Any:
@@ -75,7 +115,9 @@ def _get_path(value: Any, path: str) -> Any:
 
 def _check_required_fields(output: Any, path: str | list[str], fields: list[str] | None) -> list[str]:
     if isinstance(path, list):
-        missing = [field for field in path if isinstance(output, dict) and field not in output]
+        if not isinstance(output, dict):
+            return ["output must be an object"]
+        missing = [field for field in path if field not in output]
         return [f"missing required field: {field}" for field in missing]
 
     if fields is None:

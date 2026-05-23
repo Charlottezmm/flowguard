@@ -1,4 +1,4 @@
-from flowguard import expect, step
+from flowguard import expect, flowguard_run, step
 
 
 @step("issue.parse")
@@ -35,11 +35,12 @@ def create_repair_brief(triage: dict) -> dict:
 
 
 def main() -> None:
-    issue = parse_issue(
-        "After running the workflow, .flowguard/runs/latest/agent_context.md exists but does not explain the failure."
-    )
-    triage = triage_issue(issue)
-    create_repair_brief(triage)
+    with flowguard_run("github_issue_triage"):
+        issue = parse_issue(
+            "After running the workflow, .flowguard/runs/latest/agent_context.md exists but does not explain the failure."
+        )
+        triage = triage_issue(issue)
+        create_repair_brief(triage)
 
 
 if __name__ == "__main__":
