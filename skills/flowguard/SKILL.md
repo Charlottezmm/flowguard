@@ -15,8 +15,10 @@ Use FlowGuard when a user asks to debug, inspect, stabilize, or add reliability 
 4. Add minimal outcome checks to critical steps.
 5. Run the workflow or tests.
 6. Read `.flowguard/runs/latest/agent_context.md`.
-7. Make the smallest relevant fix.
-8. Re-run FlowGuard checks.
+7. Inspect `.flowguard/runs/latest/workflow_map.json` when upstream or downstream step order matters.
+8. Open `.flowguard/runs/latest/outcome_report.html` when a human-readable run summary is useful.
+9. Make the smallest relevant fix.
+10. Re-run FlowGuard checks.
 
 ## Constraints
 
@@ -24,4 +26,4 @@ Use FlowGuard when a user asks to debug, inspect, stabilize, or add reliability 
 - Do not convert the project into a new framework.
 - Prefer local artifacts over hosted services.
 - Treat `agent_context.md` as the primary handoff artifact for debugging.
-
+- Treat `workflow_map.json` and `outcome_report.html` as supporting artifacts, not replacement diagnosis.
