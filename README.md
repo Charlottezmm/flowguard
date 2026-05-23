@@ -15,6 +15,7 @@ FlowGuard turns messy workflow state into structured context for agents and read
 - Builds a lightweight `workflow_map.json` for AI workflow projects.
 - Records run facts such as step inputs, outputs, failures, and impacted downstream steps.
 - Generates `agent_context.md`, a compact repair context for Codex, Claude Code, Cursor, and similar agents.
+- Generates `outcome_report.html`, a static local report for human review.
 
 ## Agent Usage
 
@@ -46,11 +47,21 @@ Add enough reproduction steps and affected files before handing off to a coding 
 ## Demo
 
 ```bash
-PYTHONPATH=src python examples/github_issue_triage/pipeline.py
-PYTHONPATH=src python -m flowguard.cli
+PYTHONPATH=src .venv/bin/python examples/github_issue_triage/pipeline.py
+PYTHONPATH=src .venv/bin/python -m flowguard.cli
 ```
 
-The demo intentionally returns an incomplete issue triage result. FlowGuard catches the silent failure and writes `.flowguard/runs/latest/agent_context.md`.
+The demo intentionally returns an incomplete issue triage result. FlowGuard catches the silent failure and writes:
+
+```text
+.flowguard/runs/latest/
+  trace.json
+  workflow_map.json
+  agent_context.md
+  outcome_report.html
+```
+
+`agent_context.md` is the dynamic repair context for coding agents. `outcome_report.html` is a static local report for humans.
 
 ## Status
 
