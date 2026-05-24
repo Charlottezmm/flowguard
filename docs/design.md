@@ -200,9 +200,9 @@ It must not:
 - synchronize with hosted services
 - become a workflow control plane
 
-## v0.3 Design Work
+## v0.3 Schema Work
 
-The next design work is schema formalization:
+v0.3 formalized stable JSON artifact schemas:
 
 - add explicit `schema_version` fields where appropriate
 - document stable fields versus display-only fields

@@ -195,16 +195,16 @@ does not run workflows or write files.
 
 ## Status
 
-FlowGuard is experimental. v0.2 focuses on local checks, golden baselines, and
-read-only artifact queries.
+FlowGuard is experimental. v0.3 focuses on stable local artifact schemas,
+check-intent integration docs, and run comparison.
 
 ## Roadmap
 
 - **v0.1**: skill draft, Python runtime, workflow map, trace, agent context.
 - **v0.2**: structured checks, file/response checks, golden runs, local query
   API, minimal read-only MCP adapter.
-- **v0.3**: stable artifact schema, run comparison, repair-context protocol
-  draft, integration guide, check cookbook.
+- **v0.3**: stable artifact schema, integration guide, check cookbook, named
+  runs, and run comparison.
 - **v1.0**: frozen skill + runtime + read-only MCP, run comparison, stable
   repair-context protocol, real-world case study.
 
