@@ -53,7 +53,9 @@ PYTHONPATH=src .venv/bin/python examples/github_issue_triage/pipeline.py
 PYTHONPATH=src .venv/bin/python -m flowguard.cli
 ```
 
-The demo intentionally returns an incomplete issue triage result. FlowGuard catches the silent failure and writes:
+The demo intentionally returns an incomplete issue triage result. This is not a bug in the demo; it is the failure case used to show how FlowGuard turns a silent workflow quality issue into agent repair context. Do not "fix" the demo solely to make it pass unless you are explicitly testing a happy path.
+
+FlowGuard catches the silent failure and writes:
 
 ```text
 .flowguard/runs/latest/

@@ -15,6 +15,7 @@ def parse_issue(raw_text: str) -> dict:
 @expect.min_count("repro_steps", 2)
 @expect.min_count("affected_files", 1)
 def triage_issue(issue: dict) -> dict:
+    # Intentionally incomplete so the demo produces agent repair context.
     return {
         "issue_type": "bug",
         "severity": "medium",
