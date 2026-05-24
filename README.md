@@ -143,6 +143,10 @@ from the workflow run root, which is the current working directory that started
 the run. Absolute paths are allowed, but golden baselines normalize paths so
 checkout-specific prefixes do not become comparison noise.
 
+For adding FlowGuard to an existing workflow, see
+[`docs/integration_guide.md`](docs/integration_guide.md). For intent-bearing
+check examples, see [`docs/check_cookbook.md`](docs/check_cookbook.md).
+
 ## Golden Runs
 
 Create and compare a local semantic baseline:
