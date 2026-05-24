@@ -38,6 +38,80 @@ Golden baselines are stored separately under:
 .flowguard/goldens/<workflow>/<name>/baseline.json
 ```
 
+## Artifact Schema Versions
+
+Stable JSON artifacts include artifact-specific schema versions:
+
+| Artifact | Current schema version | Compatibility behavior |
+| --- | --- | --- |
+| `trace.json` | `flowguard.trace.v0.3` | Missing `schema_version` is read as legacy v0.2 input. |
+| `workflow_map.json` | `flowguard.workflow_map.v0.3` | Missing `schema_version` is read as legacy v0.2 input. |
+| `baseline.json` | `flowguard.golden.v0.3` | Missing `schema_version` is read as legacy v0.2 input for comparison. |
+
+`legacy-v0.2` is only a read-compatibility label. New artifacts must not write
+`legacy-v0.2`; they must write their current artifact-specific schema version.
+
+Unknown schema versions fail loudly. FlowGuard should not silently read a future
+artifact version because doing so can make query, golden comparison, or MCP
+consumers trust fields with changed semantics.
+
+`agent_context.md` keeps its own Repair Protocol header:
+
+```md
+<!-- flowguard agent_context schema: v0.1 -->
+```
+
+Do not add a second schema version mechanism to `agent_context.md`.
+`outcome_report.html` is a human-facing derived view and does not currently
+carry a schema version or metadata tag.
+
+## Stable And Derived Fields
+
+Stable fields are the fields local query helpers, golden comparison, or MCP
+consumers may rely on.
+
+For `trace.json`, the stable top-level fields are:
+
+- `schema_version`
+- `run_id`
+- `workflow`
+- `steps`
+
+Within each trace step, stable fields are:
+
+- `id`
+- `name`
+- `status`
+- `source`
+- `failures`
+- `checks`
+- `error`
+
+`started_at`, `updated_at`, `duration_ms`, `input_summary`, and
+`output_summary` are run facts but are intentionally unstable for golden
+comparison.
+
+For `workflow_map.json`, stable fields are:
+
+- `schema_version`
+- `workflow`
+- `steps`
+- step `id`, `name`, `index`, `status`, `source`, `upstream`, and `downstream`
+
+`workflow_map.json` is still a derived view. The current implementation derives
+upstream and downstream edges from observed run order, not static analysis.
+
+For golden `baseline.json`, stable fields are:
+
+- `schema_version`
+- `workflow`
+- `steps`
+- normalized step `id`, `name`, `status`, `source`, `failures`, `checks`,
+  `error`, `upstream`, and `downstream`
+
+Golden baselines intentionally exclude volatile timestamps, durations, and
+summary strings.
+
 ## Run Root Semantics
 
 `flowguard_run()` captures the current working directory when the run starts.

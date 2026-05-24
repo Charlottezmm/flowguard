@@ -4,17 +4,23 @@ import json
 from pathlib import Path
 from typing import Any
 
+from .schema import validate_artifact_schema
+
 
 RUN_DIR = Path(".flowguard/runs/latest")
 GOLDEN_DIR = Path(".flowguard/goldens")
 
 
 def load_latest_run(run_dir: Path = RUN_DIR) -> dict[str, Any]:
-    return _read_json(run_dir / "trace.json")
+    trace = _read_json(run_dir / "trace.json")
+    validate_artifact_schema("trace", trace)
+    return trace
 
 
 def load_workflow_map(run_dir: Path = RUN_DIR) -> dict[str, Any]:
-    return _read_json(run_dir / "workflow_map.json")
+    workflow_map = _read_json(run_dir / "workflow_map.json")
+    validate_artifact_schema("workflow_map", workflow_map)
+    return workflow_map
 
 
 def load_agent_context(run_dir: Path = RUN_DIR) -> str:
@@ -25,7 +31,9 @@ def load_agent_context(run_dir: Path = RUN_DIR) -> str:
 
 
 def load_golden_baseline(workflow: str, name: str = "default", golden_dir: Path = GOLDEN_DIR) -> dict[str, Any]:
-    return _read_json(golden_dir / workflow / name / "baseline.json")
+    baseline = _read_json(golden_dir / workflow / name / "baseline.json")
+    validate_artifact_schema("golden", baseline)
+    return baseline
 
 
 def find_failed_step(trace: dict[str, Any] | None = None) -> dict[str, Any] | None:

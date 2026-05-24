@@ -39,6 +39,32 @@ def test_query_loads_latest_artifacts(tmp_path, monkeypatch) -> None:
     assert summarize_run() == {"workflow": "demo", "run_id": "latest", "status": "failed", "failed_step": "demo.step"}
 
 
+def test_query_rejects_unknown_future_trace_schema(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    run_dir = Path(".flowguard/runs/latest")
+    run_dir.mkdir(parents=True)
+    (run_dir / "trace.json").write_text(
+        json.dumps({"schema_version": "flowguard.trace.v9.9", "run_id": "latest", "workflow": "demo", "steps": []}),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="Unsupported FlowGuard trace schema_version"):
+        load_latest_run()
+
+
+def test_query_rejects_unknown_future_workflow_map_schema(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    run_dir = Path(".flowguard/runs/latest")
+    run_dir.mkdir(parents=True)
+    (run_dir / "workflow_map.json").write_text(
+        json.dumps({"schema_version": "flowguard.workflow_map.v9.9", "workflow": "demo", "steps": []}),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="Unsupported FlowGuard workflow_map schema_version"):
+        load_workflow_map()
+
+
 def test_query_fails_loud_when_latest_missing(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
 
@@ -53,6 +79,19 @@ def test_query_loads_golden_baseline(tmp_path, monkeypatch) -> None:
     baseline.write_text(json.dumps({"workflow": "demo", "steps": []}), encoding="utf-8")
 
     assert load_golden_baseline("demo", "default") == {"workflow": "demo", "steps": []}
+
+
+def test_query_rejects_unknown_future_golden_schema(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    baseline = Path(".flowguard/goldens/demo/default/baseline.json")
+    baseline.parent.mkdir(parents=True)
+    baseline.write_text(
+        json.dumps({"schema_version": "flowguard.golden.v9.9", "workflow": "demo", "steps": []}),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="Unsupported FlowGuard golden schema_version"):
+        load_golden_baseline("demo", "default")
 
 
 def test_query_treats_status_failed_as_failed_step(tmp_path, monkeypatch) -> None:

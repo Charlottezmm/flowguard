@@ -39,6 +39,7 @@ def test_build_workflow_map_from_trace_order() -> None:
     )
 
     assert workflow_map == {
+        "schema_version": "flowguard.workflow_map.v0.3",
         "workflow": "demo",
         "steps": [
             {
@@ -95,6 +96,7 @@ def test_runtime_writes_workflow_map_artifact(tmp_path, monkeypatch) -> None:
     workflow_map = _workflow_map()
 
     assert workflow_map["workflow"] == "github_issue_triage"
+    assert workflow_map["schema_version"] == "flowguard.workflow_map.v0.3"
     assert [step["id"] for step in workflow_map["steps"]] == [
         "issue.parse",
         "issue.triage",

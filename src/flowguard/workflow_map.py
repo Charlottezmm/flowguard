@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from .schema import WORKFLOW_MAP_SCHEMA_VERSION
+
 
 def build_workflow_map(trace: dict[str, Any]) -> dict[str, Any]:
     """Build a minimal workflow map from observed run order."""
@@ -9,6 +11,7 @@ def build_workflow_map(trace: dict[str, Any]) -> dict[str, Any]:
     step_ids = [_step_id(step) for step in steps]
 
     return {
+        "schema_version": WORKFLOW_MAP_SCHEMA_VERSION,
         "workflow": trace.get("workflow", "default"),
         "steps": [
             {
