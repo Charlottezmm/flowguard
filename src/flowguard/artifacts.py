@@ -8,6 +8,7 @@ from typing import Any
 
 from .context import build_agent_context
 from .report import build_outcome_report
+from .schema import TRACE_SCHEMA_VERSION, add_schema_version, validate_artifact_schema
 from .workflow_map import build_workflow_map
 
 
@@ -23,6 +24,7 @@ def begin_run(workflow: str, run_root: Path | None = None) -> dict[str, Any]:
 
     now = _now()
     trace = {
+        "schema_version": TRACE_SCHEMA_VERSION,
         "run_id": "latest",
         "workflow": workflow,
         "started_at": now,
@@ -43,6 +45,7 @@ def ensure_run(workflow: str = "default", run_root: Path | None = None) -> dict[
     trace_path = run_dir / "trace.json"
     if trace_path.exists():
         trace = _read_json(trace_path, {})
+        validate_artifact_schema("trace", trace)
         trace.setdefault("run_id", "latest")
         trace.setdefault("workflow", workflow)
         trace.setdefault("started_at", _now())
@@ -51,6 +54,7 @@ def ensure_run(workflow: str = "default", run_root: Path | None = None) -> dict[
 
     now = _now()
     trace = {
+        "schema_version": TRACE_SCHEMA_VERSION,
         "run_id": "latest",
         "workflow": workflow,
         "started_at": now,
@@ -91,7 +95,10 @@ def _run_dir(run_root: Path | None) -> Path:
 
 
 def _write_trace(run_dir: Path, trace: dict[str, Any]) -> None:
-    (run_dir / "trace.json").write_text(json.dumps(trace, indent=2, ensure_ascii=False), encoding="utf-8")
+    (run_dir / "trace.json").write_text(
+        json.dumps(add_schema_version("trace", trace), indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
 
 
 def _write_workflow_map(run_dir: Path, trace: dict[str, Any]) -> None:

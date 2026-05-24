@@ -40,6 +40,7 @@ def test_normalize_run_ignores_unstable_fields() -> None:
     )
 
     assert normalized == {
+        "schema_version": "flowguard.golden.v0.3",
         "workflow": "demo",
         "steps": [
             {
@@ -71,6 +72,8 @@ def test_create_and_compare_golden(tmp_path, monkeypatch) -> None:
     baseline_path = create_golden("demo", "default")
 
     assert baseline_path == Path(".flowguard/goldens/demo/default/baseline.json")
+    baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+    assert baseline["schema_version"] == "flowguard.golden.v0.3"
     result = compare_golden("demo", "default")
     assert result.passed is True
     assert result.differences == []
@@ -86,6 +89,42 @@ def test_create_and_compare_golden(tmp_path, monkeypatch) -> None:
 
     assert failed.passed is False
     assert "latest run does not match golden baseline" in failed.differences
+
+
+def test_compare_golden_accepts_v02_baseline_without_schema_version(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    trace = {
+        "run_id": "latest",
+        "workflow": "demo",
+        "steps": [{"id": "demo.step", "name": "demo.step", "status": "success", "failures": [], "checks": [], "error": None}],
+    }
+    _write_latest(tmp_path, trace)
+    baseline = Path(".flowguard/goldens/demo/default/baseline.json")
+    baseline.parent.mkdir(parents=True)
+    baseline.write_text(json.dumps({"workflow": "demo", "steps": normalize_run(trace, {"workflow": "demo", "steps": []})["steps"]}), encoding="utf-8")
+
+    result = compare_golden("demo", "default")
+
+    assert result.passed is True
+    assert result.differences == []
+
+
+def test_compare_golden_rejects_unknown_future_schema_version(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    _write_latest(tmp_path, {"run_id": "latest", "workflow": "demo", "steps": []})
+    baseline = Path(".flowguard/goldens/demo/default/baseline.json")
+    baseline.parent.mkdir(parents=True)
+    baseline.write_text(
+        json.dumps({"schema_version": "flowguard.golden.v9.9", "workflow": "demo", "steps": []}),
+        encoding="utf-8",
+    )
+
+    try:
+        compare_golden("demo", "default")
+    except ValueError as exc:
+        assert "Unsupported FlowGuard golden schema_version" in str(exc)
+    else:
+        raise AssertionError("unknown future golden schema should fail loud")
 
 
 def test_golden_normalizes_file_check_paths(tmp_path, monkeypatch) -> None:

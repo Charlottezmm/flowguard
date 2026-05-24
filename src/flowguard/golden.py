@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from .query import RUN_DIR, load_latest_run, load_workflow_map
+from .schema import GOLDEN_SCHEMA_VERSION, add_schema_version, validate_artifact_schema
 
 
 GOLDEN_DIR = Path(".flowguard/goldens")
@@ -33,6 +34,7 @@ def create_golden(workflow: str, name: str = "default") -> Path:
 def compare_golden(workflow: str, name: str = "default") -> GoldenComparison:
     baseline_path = _baseline_path(workflow, name)
     baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+    baseline = _baseline_for_compare(baseline)
     latest = normalize_run(load_latest_run(), load_workflow_map())
     if latest == baseline:
         return GoldenComparison(True, [], baseline_path)
@@ -42,6 +44,7 @@ def compare_golden(workflow: str, name: str = "default") -> GoldenComparison:
 def normalize_run(trace: dict[str, Any], workflow_map: dict[str, Any]) -> dict[str, Any]:
     map_steps = {_step_id(step): step for step in workflow_map.get("steps", [])}
     return {
+        "schema_version": GOLDEN_SCHEMA_VERSION,
         "workflow": trace.get("workflow", "default"),
         "steps": [_normalize_step(step, map_steps.get(_step_id(step), {})) for step in trace.get("steps", [])],
     }
@@ -63,6 +66,13 @@ def _normalize_step(step: dict[str, Any], map_step: dict[str, Any]) -> dict[str,
 
 def _baseline_path(workflow: str, name: str) -> Path:
     return GOLDEN_DIR / workflow / name / "baseline.json"
+
+
+def _baseline_for_compare(baseline: dict[str, Any]) -> dict[str, Any]:
+    schema_version = validate_artifact_schema("golden", baseline)
+    if schema_version == "legacy-v0.2":
+        return add_schema_version("golden", baseline)
+    return baseline
 
 
 def _step_id(step: dict[str, Any]) -> str:

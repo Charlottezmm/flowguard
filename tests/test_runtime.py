@@ -28,6 +28,7 @@ def test_explicit_run_writes_trace_and_cleans_latest(tmp_path, monkeypatch) -> N
         make_item()
 
     first_trace = _trace()
+    assert first_trace["schema_version"] == "flowguard.trace.v0.3"
     assert first_trace["workflow"] == "demo"
     assert len(first_trace["steps"]) == 1
     assert first_trace["steps"][0]["id"] == "demo.make"
