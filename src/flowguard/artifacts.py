@@ -14,9 +14,9 @@ from .workflow_map import build_workflow_map
 RUN_DIR = Path(".flowguard/runs/latest")
 
 
-def begin_run(workflow: str) -> dict[str, Any]:
+def begin_run(workflow: str, run_root: Path | None = None) -> dict[str, Any]:
     """Start a clean latest run for an explicit workflow execution."""
-    run_dir = RUN_DIR
+    run_dir = _run_dir(run_root)
     if run_dir.exists():
         rmtree(run_dir)
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -36,8 +36,8 @@ def begin_run(workflow: str) -> dict[str, Any]:
     return trace
 
 
-def ensure_run(workflow: str = "default") -> dict[str, Any]:
-    run_dir = RUN_DIR
+def ensure_run(workflow: str = "default", run_root: Path | None = None) -> dict[str, Any]:
+    run_dir = _run_dir(run_root)
     run_dir.mkdir(parents=True, exist_ok=True)
 
     trace_path = run_dir / "trace.json"
@@ -64,11 +64,11 @@ def ensure_run(workflow: str = "default") -> dict[str, Any]:
     return trace
 
 
-def write_run_artifacts(step_result: dict[str, Any], workflow: str = "default") -> None:
-    run_dir = RUN_DIR
+def write_run_artifacts(step_result: dict[str, Any], workflow: str = "default", run_root: Path | None = None) -> None:
+    run_dir = _run_dir(run_root)
     run_dir.mkdir(parents=True, exist_ok=True)
 
-    trace = ensure_run(workflow)
+    trace = ensure_run(workflow, run_root=run_root)
     trace["updated_at"] = _now()
     trace["steps"].append(step_result)
     _write_trace(run_dir, trace)
@@ -80,6 +80,14 @@ def write_run_artifacts(step_result: dict[str, Any], workflow: str = "default") 
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _run_root(run_root: Path | None) -> Path:
+    return (run_root or Path.cwd()).resolve()
+
+
+def _run_dir(run_root: Path | None) -> Path:
+    return _run_root(run_root) / RUN_DIR
 
 
 def _write_trace(run_dir: Path, trace: dict[str, Any]) -> None:
