@@ -18,9 +18,9 @@ v1 is not the version with the most features. It is the version where the core
 loop is stable enough for a stranger to install, run, understand, and use during
 AI workflow debugging.
 
-## Current Baseline: v0.2
+## Current Baseline: v0.3
 
-v0.2 has shipped:
+v0.3 has shipped the v0.2 baseline:
 
 - Python runtime with `flowguard_run()`, `@step`, and `@expect...`
 - structured check results while preserving `failures` strings
@@ -31,22 +31,32 @@ v0.2 has shipped:
 - experimental read-only MCP adapter
 - FlowGuard skill source exists and has been verified locally
 
-The v0.2 capability verbs are:
+v0.3 adds:
+
+- artifact-specific schema versions for stable JSON artifacts
+- documented stable fields versus derived or display-only fields
+- compatibility tests for reading v0.2 artifacts
+- check-intent workflow guidance in the FlowGuard skill
+- integration guide and check cookbook
+- named run save/list support
+- run comparison for named runs, latest runs, and golden baselines
+- agent-readable comparison diffs
+
+The v0.3 capability verbs are:
 
 ```text
-capture + judge
+capture + judge + compare
 ```
 
 ## v0.3 Theme
 
-v0.3 should be one release with several small PRs. The theme is:
+v0.3 shipped as one release with several small PRs. The theme is:
 
 ```text
 integration experience + run comparison
 ```
 
-Do not split v0.3 into ceremonial sub-releases. Do split the implementation into
-small PRs so review and rollback stay easy.
+The implementation was split into small PRs so review and rollback stayed easy.
 
 ### PR 1: Positioning And Scope
 
