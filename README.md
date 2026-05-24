@@ -1,23 +1,72 @@
 # FlowGuard
 
-**Workflow context bridge for AI coding agents.**
+**Stack traces for AI workflows.**
 
-Your AI workflow says `success`. FlowGuard helps your coding agent understand what actually happened.
+When ordinary code breaks, your coding agent gets rich signal: a stack trace, a
+failing test, or a type error. When an AI workflow "breaks", a step can run,
+return, raise nothing, and still produce quietly wrong output. The agent sees
+`success` and starts guessing.
 
-## Problem
+FlowGuard manufactures the missing signal. It captures what actually happened in
+one workflow run and turns it into structured repair context for coding agents
+and a readable local report for humans.
 
-AI coding agents can read code, but they often miss the workflow context humans keep in their head: which step produced which artifact, what the last run returned, which API response was empty, and which downstream step will break next.
+## The Problem: Silent Quality Failure
 
-FlowGuard turns messy workflow state into structured context for agents and readable repair reports for humans.
+A workflow step completes without error. No exception, no crash. But the output
+is semantically wrong: the model hallucinated, returned an empty list, or
+produced a shape that still parses. That bad output flows downstream, so the
+symptom often appears far away from the cause.
 
-## What It Does
+Your coding agent can read code, but it cannot see the run. FlowGuard gives it
+something to read instead of guess.
 
-- Builds a lightweight `workflow_map.json` for AI workflow projects.
-- Records run facts such as step inputs, outputs, failures, structured checks, and impacted downstream steps.
-- Generates `agent_context.md`, a compact repair context for Codex, Claude Code, Cursor, and similar agents.
+## What FlowGuard Does
+
+- Builds a lightweight `workflow_map.json` for the feature or workflow you are
+  working on.
+- Records run facts: per-step inputs, outputs, errors, failures, structured
+  checks, and downstream impact.
+- Generates `agent_context.md`, a compact repair context for Codex, Claude Code,
+  Cursor, and similar coding agents.
 - Generates `outcome_report.html`, a static local report for human review.
 - Compares latest runs against local golden baselines.
-- Exposes local read-only query helpers and an experimental read-only MCP adapter.
+- Exposes local read-only query helpers and an experimental read-only MCP
+  adapter.
+
+FlowGuard runs at development time, on your machine, against local files. There
+is no server, no account, and no hosted service.
+
+## What It Is For
+
+FlowGuard is for steps where "did this do what I meant?" cannot be answered by a
+compiler, type checker, or simple assertion. In practice that means LLM calls,
+unstable external API responses, extraction and transformation steps, and other
+places where correctness depends on observed output and user intent.
+
+It works on one feature or workflow at a time: usually a handful to a few dozen
+steps inside a normal repository.
+
+FlowGuard is not an observability platform, not a workflow builder, and not an
+enterprise LLMOps product. If you need dashboards, hosted traces, team-wide
+aggregation, or cloud sync, FlowGuard is the wrong tool.
+
+For the longer positioning and boundaries, see
+[`docs/positioning.md`](docs/positioning.md).
+
+## Two Audiences, Two Views
+
+`trace.json` is the source of truth for run facts. Other artifacts are derived
+views:
+
+- **`agent_context.md` is for your coding agent.** It is terse and structured:
+  failed step id, failed checks, downstream impact, relevant files, and suggested
+  focus.
+- **`outcome_report.html` is for you.** It is a scannable static report for
+  human review.
+
+These views are deliberately separate. One file should not try to serve both
+humans and agents.
 
 ## Agent Usage
 
@@ -26,6 +75,8 @@ Use FlowGuard to map this workflow, inspect the failed run, and create a repair 
 ```
 
 ## Example Output
+
+`agent_context.md`:
 
 ```md
 # Agent Context
@@ -53,7 +104,10 @@ PYTHONPATH=src .venv/bin/python examples/github_issue_triage/pipeline.py
 PYTHONPATH=src .venv/bin/python -m flowguard.cli
 ```
 
-The demo intentionally returns an incomplete issue triage result. This is not a bug in the demo; it is the failure case used to show how FlowGuard turns a silent workflow quality issue into agent repair context. Do not "fix" the demo solely to make it pass unless you are explicitly testing a happy path.
+The demo intentionally returns an incomplete issue triage result. This is not a
+bug in the demo; it is the failure case used to show how FlowGuard turns a
+silent workflow quality issue into agent repair context. Do not "fix" the demo
+solely to make it pass unless you are explicitly testing a happy path.
 
 FlowGuard catches the silent failure and writes:
 
@@ -65,9 +119,7 @@ FlowGuard catches the silent failure and writes:
   outcome_report.html
 ```
 
-`agent_context.md` is the dynamic repair context for coding agents. `outcome_report.html` is a static local report for humans.
-
-## v0.2 Local Checks
+## Local Checks
 
 FlowGuard v0.2 adds structured check results while preserving the v0.1
 `failures` strings. Workflows can also check local file artifacts and
@@ -83,7 +135,7 @@ def inspect_result(result: dict) -> dict:
     ...
 ```
 
-FlowGuard does not make HTTP requests for response checks; it only validates
+FlowGuard does not make HTTP requests for response checks. It only validates
 objects your workflow already captured.
 
 File check paths are read from step output fields. Relative file paths resolve
@@ -120,10 +172,21 @@ does not run workflows or write files.
 
 ## Status
 
-FlowGuard is experimental. v0.2 focuses on local checks, golden baselines, and read-only artifact queries.
+FlowGuard is experimental. v0.2 focuses on local checks, golden baselines, and
+read-only artifact queries.
 
 ## Roadmap
 
-- v0.1: Skill draft, Python runtime, workflow map, trace, agent context.
-- v0.2: Structured checks, API/file checks, golden runs, local query API, minimal read-only MCP adapter.
-- v1.0: stable Skill + runtime + MCP, run comparison, real-world case study.
+- **v0.1**: skill draft, Python runtime, workflow map, trace, agent context.
+- **v0.2**: structured checks, file/response checks, golden runs, local query
+  API, minimal read-only MCP adapter.
+- **v0.3**: stable artifact schema, run comparison, repair-context protocol
+  draft, integration guide, check cookbook.
+- **v1.0**: frozen skill + runtime + read-only MCP, run comparison, stable
+  repair-context protocol, real-world case study.
+
+For the detailed v1 plan, see [`docs/v1_scope.md`](docs/v1_scope.md).
+
+## License
+
+MIT.
