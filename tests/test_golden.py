@@ -89,6 +89,8 @@ def test_create_and_compare_golden(tmp_path, monkeypatch) -> None:
 
     assert failed.passed is False
     assert "latest run does not match golden baseline" in failed.differences
+    assert "## step_status_changed" in failed.agent_diff
+    assert "- `demo.step`: golden:default=success, latest=failed" in failed.agent_diff
 
 
 def test_compare_golden_accepts_v02_baseline_without_schema_version(tmp_path, monkeypatch) -> None:
