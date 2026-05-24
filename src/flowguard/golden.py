@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .comparison import compare_runs
 from .query import RUN_DIR, load_latest_run, load_workflow_map
 from .schema import GOLDEN_SCHEMA_VERSION, add_schema_version, validate_artifact_schema
 
@@ -17,6 +18,7 @@ class GoldenComparison:
     passed: bool
     differences: list[str]
     baseline_path: Path
+    agent_diff: str
 
 
 def create_golden(workflow: str, name: str = "default") -> Path:
@@ -36,9 +38,11 @@ def compare_golden(workflow: str, name: str = "default") -> GoldenComparison:
     baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
     baseline = _baseline_for_compare(baseline)
     latest = normalize_run(load_latest_run(), load_workflow_map())
-    if latest == baseline:
-        return GoldenComparison(True, [], baseline_path)
-    return GoldenComparison(False, ["latest run does not match golden baseline", *_diff_top_level(baseline, latest)], baseline_path)
+    comparison = compare_runs(baseline, latest, left_label=f"golden:{name}", right_label="latest")
+    if comparison.passed:
+        return GoldenComparison(True, [], baseline_path, comparison.agent_diff)
+    differences = ["latest run does not match golden baseline", *_diff_top_level(baseline, latest)]
+    return GoldenComparison(False, differences, baseline_path, comparison.agent_diff)
 
 
 def normalize_run(trace: dict[str, Any], workflow_map: dict[str, Any]) -> dict[str, Any]:

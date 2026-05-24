@@ -159,6 +159,25 @@ PYTHONPATH=src .venv/bin/python -m flowguard.cli golden compare --workflow githu
 Golden comparisons ignore unstable fields such as timestamps, durations, and
 input/output summary strings.
 
+## Run Comparison
+
+Save named local runs before and after a change:
+
+```bash
+PYTHONPATH=src .venv/bin/python -m flowguard.cli run save --workflow github_issue_triage --name before-fix
+PYTHONPATH=src .venv/bin/python -m flowguard.cli run list --workflow github_issue_triage
+```
+
+Compare two run references:
+
+```bash
+PYTHONPATH=src .venv/bin/python -m flowguard.cli run compare --workflow github_issue_triage --left before-fix --right latest
+```
+
+Run comparison reports step status changes, check changes, failure changes,
+error changes, and downstream impact changes in an agent-readable diff. It is a
+derived view over local artifacts, not a new source-of-truth artifact.
+
 ## Query And MCP
 
 Python code can read latest artifacts through `flowguard.query`, including

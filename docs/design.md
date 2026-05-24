@@ -38,6 +38,15 @@ Golden baselines are stored separately under:
 .flowguard/goldens/<workflow>/<name>/baseline.json
 ```
 
+Named run snapshots are stored under:
+
+```text
+.flowguard/runs/named/<workflow>/<name>/
+```
+
+They copy the latest run artifacts for local comparison. The run name is path
+metadata; it does not rewrite `trace.json` run facts.
+
 ## Artifact Schema Versions
 
 Stable JSON artifacts include artifact-specific schema versions:
@@ -160,6 +169,23 @@ Treat text changes to this file as protocol changes, not ordinary copy edits.
 
 `outcome_report.html` is a static report for humans. It should remain local and
 file-based. It should not become a hosted dashboard or web server.
+
+## Run Comparison
+
+Run comparison is a derived query view over normalized run artifacts. It should
+not write a new source-of-truth artifact.
+
+The comparison engine aligns steps by step id and reports:
+
+- added and removed steps
+- step status changes
+- added, removed, and status-changed checks
+- added and removed failure strings
+- error changes
+- downstream impact changes
+
+Golden comparison and named-run comparison should share this engine so agent
+readable diffs stay consistent.
 
 ## MCP Boundary
 
