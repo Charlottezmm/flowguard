@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.10"
+          - "3.12"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package and development dependencies
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/python -m pip install -e ".[dev]"
+
+      - name: Run demo and verify artifacts
+        run: |
+          rm -rf .flowguard/runs/latest
+          PYTHONPATH=src .venv/bin/python examples/github_issue_triage/pipeline.py
+          test -f .flowguard/runs/latest/trace.json
+          test -f .flowguard/runs/latest/workflow_map.json
+          test -f .flowguard/runs/latest/agent_context.md
+          test -f .flowguard/runs/latest/outcome_report.html
+          grep -q "Failed step: issue.triage" .flowguard/runs/latest/agent_context.md
+          grep -q "affected_files must contain at least 1 items" .flowguard/runs/latest/agent_context.md
+          grep -q "repro_steps must contain at least 2 items" .flowguard/runs/latest/agent_context.md
+          grep -q "Downstream impacted:" .flowguard/runs/latest/agent_context.md
+          grep -q "repair_brief.create" .flowguard/runs/latest/agent_context.md
+          grep -q "FlowGuard Outcome Report" .flowguard/runs/latest/outcome_report.html
+
+      - name: Verify clean latest run contains only demo steps
+        run: |
+          PYTHONPATH=src .venv/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+
+          trace = json.loads(Path(".flowguard/runs/latest/trace.json").read_text(encoding="utf-8"))
+          step_ids = [step["id"] for step in trace["steps"]]
+          assert trace["workflow"] == "github_issue_triage"
+          assert step_ids == ["issue.parse", "issue.triage", "repair_brief.create"]
+          assert trace["steps"][1]["status"] == "failed"
+          PY
+
+      - name: Run CLI
+        run: PYTHONPATH=src .venv/bin/python -m flowguard.cli
+
+      - name: Run tests
+        run: PYTHONPATH=src .venv/bin/python -m pytest
+
+      - name: Compile Python files
+        run: .venv/bin/python -m compileall src tests examples
