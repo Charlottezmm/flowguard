@@ -54,6 +54,21 @@ def test_cli_golden_requires_subcommand(tmp_path, monkeypatch) -> None:
     assert "usage:" in result.stderr
 
 
+def test_cli_golden_reports_short_errors_without_traceback(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+
+    result = subprocess.run(
+        [sys.executable, "-m", "flowguard.cli", "golden", "create", "--workflow", "demo", "--name", "../escape"],
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 1
+    assert "FlowGuard error:" in result.stderr
+    assert "must be a simple path segment" in result.stderr
+    assert "Traceback" not in result.stderr
+
+
 def test_cli_reports_short_errors_without_traceback(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
 

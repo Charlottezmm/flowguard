@@ -5,6 +5,7 @@ from pathlib import Path
 from shutil import copy2, rmtree
 from typing import Any
 
+from .paths import validate_path_segment
 from .schema import validate_artifact_schema
 
 
@@ -27,8 +28,8 @@ def load_workflow_map(run_dir: Path = RUN_DIR) -> dict[str, Any]:
 
 
 def save_named_run(workflow: str, name: str, run_dir: Path = RUN_DIR, named_runs_dir: Path = NAMED_RUNS_DIR) -> Path:
-    _validate_path_segment("workflow", workflow)
-    _validate_path_segment("name", name)
+    validate_path_segment("named run workflow", workflow)
+    validate_path_segment("named run name", name)
     trace = load_latest_run(run_dir)
     if trace.get("workflow") != workflow:
         raise ValueError(f"latest workflow is {trace.get('workflow')}, not {workflow}")
@@ -48,7 +49,7 @@ def save_named_run(workflow: str, name: str, run_dir: Path = RUN_DIR, named_runs
 
 def list_named_runs(workflow: str | None = None, named_runs_dir: Path = NAMED_RUNS_DIR) -> list[dict[str, str]]:
     if workflow is not None:
-        _validate_path_segment("workflow", workflow)
+        validate_path_segment("named run workflow", workflow)
     if not named_runs_dir.exists():
         return []
 
@@ -63,8 +64,8 @@ def list_named_runs(workflow: str | None = None, named_runs_dir: Path = NAMED_RU
 
 
 def load_named_run(workflow: str, name: str, named_runs_dir: Path = NAMED_RUNS_DIR) -> dict[str, Any]:
-    _validate_path_segment("workflow", workflow)
-    _validate_path_segment("name", name)
+    validate_path_segment("named run workflow", workflow)
+    validate_path_segment("named run name", name)
     run_dir = named_runs_dir / workflow / name
     return {
         "trace": load_latest_run(run_dir),
@@ -125,17 +126,3 @@ def _step_id(step: dict[str, Any] | None) -> str | None:
     if not step:
         return None
     return str(step.get("id") or step.get("name") or step.get("step") or "unknown")
-
-
-def _validate_path_segment(label: str, value: str) -> None:
-    path = Path(value)
-    if (
-        not value
-        or value in {".", ".."}
-        or path.is_absolute()
-        or path.name != value
-        or "/" in value
-        or "\\" in value
-        or ".." in path.parts
-    ):
-        raise ValueError(f"named run {label} must be a simple path segment: {value!r}")
