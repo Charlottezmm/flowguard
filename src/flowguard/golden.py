@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from .comparison import compare_runs
+from .paths import validate_path_segment
 from .query import RUN_DIR, load_latest_run, load_workflow_map
 from .schema import GOLDEN_SCHEMA_VERSION, add_schema_version, validate_artifact_schema
 
@@ -22,6 +23,7 @@ class GoldenComparison:
 
 
 def create_golden(workflow: str, name: str = "default") -> Path:
+    _validate_golden_reference(workflow, name)
     trace = load_latest_run()
     if trace.get("workflow") != workflow:
         raise ValueError(f"latest workflow is {trace.get('workflow')}, not {workflow}")
@@ -34,6 +36,7 @@ def create_golden(workflow: str, name: str = "default") -> Path:
 
 
 def compare_golden(workflow: str, name: str = "default") -> GoldenComparison:
+    _validate_golden_reference(workflow, name)
     baseline_path = _baseline_path(workflow, name)
     baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
     baseline = _baseline_for_compare(baseline)
@@ -70,6 +73,11 @@ def _normalize_step(step: dict[str, Any], map_step: dict[str, Any]) -> dict[str,
 
 def _baseline_path(workflow: str, name: str) -> Path:
     return GOLDEN_DIR / workflow / name / "baseline.json"
+
+
+def _validate_golden_reference(workflow: str, name: str) -> None:
+    validate_path_segment("golden workflow", workflow)
+    validate_path_segment("golden name", name)
 
 
 def _baseline_for_compare(baseline: dict[str, Any]) -> dict[str, Any]:

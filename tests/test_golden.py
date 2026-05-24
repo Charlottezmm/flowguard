@@ -177,3 +177,31 @@ def test_create_golden_rejects_workflow_mismatch(tmp_path, monkeypatch) -> None:
         assert "latest workflow is actual, not expected" in str(exc)
     else:
         raise AssertionError("workflow mismatch should fail")
+
+
+def test_golden_references_reject_path_traversal(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    _write_latest(tmp_path, {"run_id": "latest", "workflow": "demo", "steps": []})
+
+    for unsafe in ["", ".", "..", "../escape", "nested/name", "/tmp/escape", "nested\\name"]:
+        try:
+            create_golden("demo", unsafe)
+        except ValueError as exc:
+            assert "must be a simple path segment" in str(exc)
+        else:
+            raise AssertionError(f"unsafe golden name should fail: {unsafe!r}")
+
+        try:
+            compare_golden("demo", unsafe)
+        except ValueError as exc:
+            assert "must be a simple path segment" in str(exc)
+        else:
+            raise AssertionError(f"unsafe golden name should fail: {unsafe!r}")
+
+    for unsafe_workflow in ["../workflow", "/tmp/workflow", "nested/workflow"]:
+        try:
+            create_golden(unsafe_workflow, "default")
+        except ValueError as exc:
+            assert "must be a simple path segment" in str(exc)
+        else:
+            raise AssertionError(f"unsafe golden workflow should fail: {unsafe_workflow!r}")
