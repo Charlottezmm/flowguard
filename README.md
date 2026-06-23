@@ -234,8 +234,12 @@ services. Missing or unsupported local artifacts return JSON-RPC errors.
 
 ## Status
 
-FlowGuard is experimental. v0.3 focuses on stable local artifact schemas,
-check-intent integration docs, and run comparison.
+FlowGuard v1.0 has a stable local core. The Python runtime, artifact schemas,
+repair context protocol, read-only MCP surface, quickstart, case study, and
+local report are frozen for the v1 workflow.
+
+FlowGuard remains local-first and development-time. It is not a hosted service,
+dashboard, workflow builder, team observability system, or cloud sync product.
 
 ## Roadmap
 

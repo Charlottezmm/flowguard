@@ -59,7 +59,7 @@ def test_mcp_initialize_and_stable_tool_list(tmp_path, monkeypatch) -> None:
 
     assert initialize["result"]["protocolVersion"] == "2025-11-25"
     assert initialize["result"]["capabilities"] == {"tools": {}}
-    assert initialize["result"]["serverInfo"] == {"name": "flowguard", "version": "0.3.0"}
+    assert initialize["result"]["serverInfo"] == {"name": "flowguard", "version": "1.0.0"}
     assert [tool["name"] for tool in tools["result"]["tools"]] == TOOL_NAMES
     assert tools["result"]["tools"] == [
         {
