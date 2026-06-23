@@ -1,28 +1,28 @@
 # FlowGuard v1 Loop State
 
-Last updated: 2026-06-23 21:20 Asia/Shanghai
+Last updated: 2026-06-23 21:40 Asia/Shanghai
 
 ## Current State
 
 - Goal: ship FlowGuard v1.0 by freezing the local repair loop and proving a new
   user can complete it end to end.
-- Current objective: PR6 - Clean Environment Quickstart
+- Current objective: PR7 - Real Or Near-real Case Study
 - Status: pr_open
-- Branch: `codex/flowguard-clean-quickstart`
-- PR: https://github.com/Charlottezmm/flowguard/pull/25
-- Last automation tick: 2026-06-23T13:20:08Z heartbeat.
-- Next action: open PR6 and wait for GitHub CI and merge gates. Do not start
-  PR7 until PR6 is merged.
+- Branch: `codex/flowguard-v1-case-study`
+- PR: https://github.com/Charlottezmm/flowguard/pull/26
+- Last automation tick: 2026-06-23T13:40:38Z heartbeat.
+- Next action: open PR7 and wait for GitHub CI and merge gates. Do not start
+  PR8 until PR7 is merged.
 
 ## Verification Evidence
 
 - Targeted tests: `PYTHONPATH=src .venv/bin/python -m pytest
-  tests/test_docs.py` passed, 7 tests.
-- Full tests: `PYTHONPATH=src .venv/bin/python -m pytest` passed, 82 tests.
+  tests/test_case_study.py` passed, 2 tests.
+- Full tests: `PYTHONPATH=src .venv/bin/python -m pytest` passed, 84 tests.
 - Compile check: `.venv/bin/python -m compileall src tests examples` passed.
-- Quickstart readback: README quickstart commands passed through demo, CLI
-  context, direct `agent_context.md` readback, named run compare, golden create,
-  and golden compare.
+- Case study readback: broken/fixed `support_reply_case_study` runs exercised
+  `agent_context.md`, named run comparison, golden create/compare, and golden
+  regression failure locally.
 - Demo artifact check: demo generated only `trace.json`, `workflow_map.json`,
   `agent_context.md`, and `outcome_report.html`.
 - Agent context readback: `.flowguard/runs/latest/agent_context.md` reports
@@ -31,13 +31,9 @@ Last updated: 2026-06-23 21:20 Asia/Shanghai
 - Verifier: approved by fresh verifier.
 - Spec review: approved by fresh reviewer.
 - Quality review: approved by fresh reviewer.
-- Clean-checkout smoke: isolated detached worktree passed README quickstart
-  from new `.venv` through install, demo, CLI context, direct
-  `agent_context.md` readback, named run compare, golden create, and golden
-  compare.
 - PR merge gate: pending GitHub CI and final merge.
-- Last completed objective: PR5 merged in
-  https://github.com/Charlottezmm/flowguard/pull/24.
+- Last completed objective: PR6 merged in
+  https://github.com/Charlottezmm/flowguard/pull/25.
 
 ## Blockers
 
@@ -51,7 +47,7 @@ Last updated: 2026-06-23 21:20 Asia/Shanghai
 - [x] PR3: Artifact Schema Contract Tests
 - [x] PR4: Repair Context Protocol Freeze
 - [x] PR5: Stable Read-only MCP Surface
-- [ ] PR6: Clean Environment Quickstart
+- [x] PR6: Clean Environment Quickstart
 - [ ] PR7: Real Or Near-real Case Study
 - [ ] PR8: Screenshot-ready Outcome Report
 - [ ] PR9: v1.0 Release Cleanup
