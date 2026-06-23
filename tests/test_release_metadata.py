@@ -25,6 +25,10 @@ def test_v1_release_metadata_is_documented_without_publish_claim() -> None:
     assert "FlowGuard v1.0 has a stable local core." in readme
     assert "FlowGuard is experimental. v0.3 focuses" not in readme
     assert "Release: `v1.0.0`" in review
-    assert "Release/tag/publish status: not authorized yet" in review
+    assert (
+        "Release/tag/publish status: approved for GitHub release; no package registry"
+        in review
+    )
+    assert "No package registry publish is authorized" in review
     assert "No hosted service." in review
     assert "No write-capable MCP tools." in review
