@@ -1,9 +1,13 @@
 # FlowGuard Agent Context Spec
 
-`agent_context.md` is the FlowGuard Repair Protocol v0.1 artifact.
+`agent_context.md` is the FlowGuard Repair Protocol v0.1 artifact and the v1
+stable agent-facing repair context contract.
 
 It is a dynamic repair handoff artifact, not a verbose log. It should be
 concise, deterministic, and directly actionable for a coding agent.
+
+Treat changes to section names, section ordering, schema header text, or
+suggested-focus templates as protocol changes that require explicit tests.
 
 ## Relationship To Static Context
 
@@ -27,9 +31,11 @@ Every generated file starts with:
 <!-- flowguard agent_context schema: v0.1 -->
 ```
 
+Do not add a second schema/version mechanism to `agent_context.md`.
+
 ## Failure Selection
 
-v0.1 reports the latest failed step only.
+The v1-stable v0.1 protocol reports the latest failed step only.
 
 A failed step is any step in `trace.json` with either:
 
@@ -65,6 +71,7 @@ Verification
 ```
 
 `Error` is included only when the selected failed step has an exception.
+Expectation failures without exceptions omit the `Error` section.
 
 ## Terminology
 
@@ -139,4 +146,3 @@ No failed checks in the latest run.
 ```
 
 This keeps downstream tooling simple: agents can always read the same path.
-

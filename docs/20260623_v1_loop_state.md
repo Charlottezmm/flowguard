@@ -6,20 +6,19 @@ Last updated: 2026-06-23 Asia/Shanghai
 
 - Goal: ship FlowGuard v1.0 by freezing the local repair loop and proving a new
   user can complete it end to end.
-- Current objective: PR3 - Artifact Schema Contract Tests
+- Current objective: PR4 - Repair Context Protocol Freeze
 - Status: pr_open
-- Branch: `codex/flowguard-artifact-schema-contract-tests`
-- PR: https://github.com/Charlottezmm/flowguard/pull/22
-- Last automation tick: 2026-06-23T12:20:08Z heartbeat.
-- Next action: wait for PR3 GitHub CI and merge gates. Do not start PR4 until
-  PR3 is merged.
+- Branch: `codex/flowguard-repair-context-protocol-freeze`
+- PR: https://github.com/Charlottezmm/flowguard/pull/23
+- Last automation tick: 2026-06-23T12:40:08Z heartbeat.
+- Next action: wait for PR4 GitHub CI and merge gates. Do not start PR5 until
+  PR4 is merged.
 
 ## Verification Evidence
 
 - Targeted tests: `PYTHONPATH=src .venv/bin/python -m pytest
-  tests/test_schema.py tests/test_query.py tests/test_golden.py` passed, 31
-  tests.
-- Full tests: `PYTHONPATH=src .venv/bin/python -m pytest` passed, 73 tests.
+  tests/test_context.py` passed, 8 tests.
+- Full tests: `PYTHONPATH=src .venv/bin/python -m pytest` passed, 76 tests.
 - Compile check: `.venv/bin/python -m compileall src tests examples` passed.
 - Demo artifact check: demo generated only `trace.json`, `workflow_map.json`,
   `agent_context.md`, and `outcome_report.html`.
@@ -27,8 +26,8 @@ Last updated: 2026-06-23 Asia/Shanghai
   intentional failure `issue.triage`.
 - Boundary check: no `contracts.json` or `failed_contracts.md` found.
 - PR merge gate: pending GitHub CI and final merge.
-- Last completed objective: PR2 merged in
-  https://github.com/Charlottezmm/flowguard/pull/21.
+- Last completed objective: PR3 merged in
+  https://github.com/Charlottezmm/flowguard/pull/22.
 
 ## Blockers
 
@@ -39,7 +38,7 @@ Last updated: 2026-06-23 Asia/Shanghai
 - [x] PR0: Loop Engineer Operating Contract
 - [x] PR1: v1 Contract Spec
 - [x] PR2: Runtime API Freeze Tests
-- [ ] PR3: Artifact Schema Contract Tests
+- [x] PR3: Artifact Schema Contract Tests
 - [ ] PR4: Repair Context Protocol Freeze
 - [ ] PR5: Stable Read-only MCP Surface
 - [ ] PR6: Clean Environment Quickstart
