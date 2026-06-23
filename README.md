@@ -54,6 +54,35 @@ aggregation, or cloud sync, FlowGuard is the wrong tool.
 For the longer positioning and boundaries, see
 [`docs/positioning.md`](docs/positioning.md).
 
+## Quickstart
+
+From a clean checkout:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -e ".[dev]"
+PYTHONPATH=src .venv/bin/python examples/github_issue_triage/pipeline.py
+PYTHONPATH=src .venv/bin/python -m flowguard.cli
+sed -n '1,80p' .flowguard/runs/latest/agent_context.md
+PYTHONPATH=src .venv/bin/python -m flowguard.cli run save --workflow github_issue_triage --name quickstart
+PYTHONPATH=src .venv/bin/python -m flowguard.cli run compare --workflow github_issue_triage --left quickstart --right latest
+PYTHONPATH=src .venv/bin/python -m flowguard.cli golden create --workflow github_issue_triage --name quickstart
+PYTHONPATH=src .venv/bin/python -m flowguard.cli golden compare --workflow github_issue_triage --name quickstart
+```
+
+The demo intentionally reports a failed step, `issue.triage`. The quickstart is
+successful when:
+
+- `.flowguard/runs/latest/` contains `trace.json`, `workflow_map.json`,
+  `agent_context.md`, and `outcome_report.html`.
+- the CLI context command and `agent_context.md` readback both say
+  `Failed step: issue.triage`.
+- named-run comparison prints `Run comparison passed`.
+- golden comparison prints `Golden comparison passed`.
+
+For a command-by-command checklist, see
+[`docs/quickstart_check.md`](docs/quickstart_check.md).
+
 ## Two Audiences, Two Views
 
 `trace.json` is the source of truth for run facts. Other artifacts are derived
