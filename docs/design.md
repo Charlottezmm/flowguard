@@ -189,14 +189,29 @@ readable diffs stay consistent.
 
 ## MCP Boundary
 
-The MCP adapter is a read-only query layer over local artifacts. It should use
-the local query API rather than reimplementing artifact reads directly.
+The MCP adapter is a stable read-only query layer over local artifacts. It
+should use the local query API rather than reimplementing artifact reads
+directly.
+
+The v1 MCP stdio server exposes exactly these tools:
+
+| Tool | Response |
+| --- | --- |
+| `flowguard_latest_status` | JSON text with workflow, run id, status, and failed step id. |
+| `flowguard_failed_step` | JSON text with the failed step object from the latest trace, or `null`. |
+| `flowguard_workflow_map` | JSON text with the latest `workflow_map.json`. |
+| `flowguard_agent_context` | Markdown text from the latest `agent_context.md`. |
+
+Missing or unsupported local artifacts must return clear JSON-RPC errors rather
+than vague successful tool output.
 
 It must not:
 
 - execute workflows
 - edit code
 - write artifacts
+- create golden baselines
+- save named runs
 - synchronize with hosted services
 - become a workflow control plane
 

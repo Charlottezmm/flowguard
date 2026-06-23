@@ -1,33 +1,37 @@
 # FlowGuard v1 Loop State
 
-Last updated: 2026-06-23 Asia/Shanghai
+Last updated: 2026-06-23 21:00 Asia/Shanghai
 
 ## Current State
 
 - Goal: ship FlowGuard v1.0 by freezing the local repair loop and proving a new
   user can complete it end to end.
-- Current objective: PR4 - Repair Context Protocol Freeze
+- Current objective: PR5 - Stable Read-only MCP Surface
 - Status: pr_open
-- Branch: `codex/flowguard-repair-context-protocol-freeze`
-- PR: https://github.com/Charlottezmm/flowguard/pull/23
-- Last automation tick: 2026-06-23T12:40:08Z heartbeat.
-- Next action: wait for PR4 GitHub CI and merge gates. Do not start PR5 until
-  PR4 is merged.
+- Branch: `codex/flowguard-stable-readonly-mcp`
+- PR: https://github.com/Charlottezmm/flowguard/pull/24
+- Last automation tick: 2026-06-23T13:00:08Z heartbeat.
+- Next action: open PR5 and wait for GitHub CI and merge gates. Do not start
+  PR6 until PR5 is merged.
 
 ## Verification Evidence
 
 - Targeted tests: `PYTHONPATH=src .venv/bin/python -m pytest
-  tests/test_context.py` passed, 8 tests.
-- Full tests: `PYTHONPATH=src .venv/bin/python -m pytest` passed, 76 tests.
+  tests/test_mcp_server.py tests/test_query.py` passed, 17 tests.
+- Full tests: `PYTHONPATH=src .venv/bin/python -m pytest` passed, 78 tests.
 - Compile check: `.venv/bin/python -m compileall src tests examples` passed.
 - Demo artifact check: demo generated only `trace.json`, `workflow_map.json`,
   `agent_context.md`, and `outcome_report.html`.
 - Agent context readback: `.flowguard/runs/latest/agent_context.md` reports
   intentional failure `issue.triage`.
+- MCP smoke: stdio `tools/list` exposes the four read-only tools and
+  `flowguard_latest_status` reports failed latest run `issue.triage`.
 - Boundary check: no `contracts.json` or `failed_contracts.md` found.
+- Spec review: approved by fresh reviewer.
+- Quality review: approved by fresh reviewer.
 - PR merge gate: pending GitHub CI and final merge.
-- Last completed objective: PR3 merged in
-  https://github.com/Charlottezmm/flowguard/pull/22.
+- Last completed objective: PR4 merged in
+  https://github.com/Charlottezmm/flowguard/pull/23.
 
 ## Blockers
 
@@ -39,7 +43,7 @@ Last updated: 2026-06-23 Asia/Shanghai
 - [x] PR1: v1 Contract Spec
 - [x] PR2: Runtime API Freeze Tests
 - [x] PR3: Artifact Schema Contract Tests
-- [ ] PR4: Repair Context Protocol Freeze
+- [x] PR4: Repair Context Protocol Freeze
 - [ ] PR5: Stable Read-only MCP Surface
 - [ ] PR6: Clean Environment Quickstart
 - [ ] PR7: Real Or Near-real Case Study

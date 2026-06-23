@@ -31,8 +31,8 @@ something to read instead of guess.
   Cursor, and similar coding agents.
 - Generates `outcome_report.html`, a static local report for human review.
 - Compares latest runs against local golden baselines.
-- Exposes local read-only query helpers and an experimental read-only MCP
-  adapter.
+- Exposes local read-only query helpers and a stable read-only MCP stdio
+  server.
 
 FlowGuard runs at development time, on your machine, against local files. There
 is no server, no account, and no hosted service.
@@ -184,14 +184,24 @@ Python code can read latest artifacts through `flowguard.query`, including
 `load_latest_run()`, `summarize_run()`, `find_failed_step()`, and
 `load_agent_context()`.
 
-An experimental read-only MCP stdio server is available:
+A stable read-only MCP stdio server is available:
 
 ```bash
 PYTHONPATH=src .venv/bin/python -m flowguard.mcp_server
 ```
 
-It exposes latest run status, failed step, workflow map, and agent context. It
-does not run workflows or write files.
+It exposes four tools:
+
+- `flowguard_latest_status`: returns workflow, run id, overall status, and
+  failed step id.
+- `flowguard_failed_step`: returns the failed step object from the latest
+  `trace.json`, or `null` when no step failed.
+- `flowguard_workflow_map`: returns the latest `workflow_map.json`.
+- `flowguard_agent_context`: returns the latest `agent_context.md`.
+
+The MCP server is read-only. It does not run workflows, write files, create
+golden baselines, save named runs, edit code, or synchronize with hosted
+services. Missing or unsupported local artifacts return JSON-RPC errors.
 
 ## Status
 
