@@ -11,6 +11,10 @@ def build_outcome_report(trace: dict[str, Any], workflow_map: dict[str, Any] | N
     steps = list(trace.get("steps", []))
     status = _run_status(steps)
     map_steps = {str(step.get("id") or step.get("name") or step.get("step")): step for step in (workflow_map or {}).get("steps", [])}
+    failed_step = _failed_step(steps)
+    failed_step_id = _step_id(failed_step) if failed_step else "none"
+    downstream = _downstream_for(failed_step_id, map_steps) if failed_step else []
+    relevant_files = _relevant_files(failed_step, downstream, steps, map_steps)
 
     rows = "\n".join(_step_row(index, step, map_steps) for index, step in enumerate(steps))
     if not rows:
@@ -27,7 +31,7 @@ def build_outcome_report(trace: dict[str, Any], workflow_map: dict[str, Any] | N
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 32px;
       color: #202124;
-      background: #f8f9fb;
+      background: #f6f8fb;
     }}
     main {{
       max-width: 1120px;
@@ -40,6 +44,29 @@ def build_outcome_report(trace: dict[str, Any], workflow_map: dict[str, Any] | N
     .meta {{
       margin: 0 0 24px;
       color: #5f6368;
+    }}
+    .summary {{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin: 0 0 24px;
+    }}
+    .metric {{
+      background: #ffffff;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }}
+    .metric-label {{
+      color: #5f6368;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }}
+    .metric-value {{
+      margin-top: 8px;
+      font-size: 15px;
+      font-weight: 700;
     }}
     .status {{
       display: inline-block;
@@ -91,6 +118,11 @@ def build_outcome_report(trace: dict[str, Any], workflow_map: dict[str, Any] | N
     .links {{
       margin-top: 18px;
     }}
+    @media (max-width: 760px) {{
+      body {{ margin: 16px; }}
+      table {{ display: block; overflow-x: auto; }}
+      th, td {{ min-width: 120px; }}
+    }}
   </style>
 </head>
 <body>
@@ -101,6 +133,24 @@ def build_outcome_report(trace: dict[str, Any], workflow_map: dict[str, Any] | N
       Run: <strong>{escape(run_id)}</strong> |
       Status: {_status_badge(status)}
     </p>
+    <section class="summary" aria-label="Run summary">
+      <div class="metric">
+        <div class="metric-label">Overall Status</div>
+        <div class="metric-value">{_status_badge(status)}</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Failed Step</div>
+        <div class="metric-value"><code>{escape(failed_step_id)}</code></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Downstream impact</div>
+        <div class="metric-value">{_inline_list(downstream)}</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Relevant files</div>
+        <div class="metric-value">{_inline_list(relevant_files)}</div>
+      </div>
+    </section>
     <table>
       <thead>
         <tr>
@@ -135,8 +185,17 @@ def _run_status(steps: list[dict[str, Any]]) -> str:
     return "success"
 
 
+def _failed_step(steps: list[dict[str, Any]]) -> dict[str, Any] | None:
+    failed_steps = [
+        step
+        for step in steps
+        if step.get("status") in {"failed", "error"} or step.get("failures") or step.get("error")
+    ]
+    return failed_steps[-1] if failed_steps else None
+
+
 def _step_row(index: int, step: dict[str, Any], map_steps: dict[str, dict[str, Any]]) -> str:
-    step_id = str(step.get("id") or step.get("name") or step.get("step") or "unknown")
+    step_id = _step_id(step)
     map_step = map_steps.get(step_id, {})
     failures = list(step.get("failures", []))
     error = step.get("error")
@@ -160,6 +219,35 @@ def _step_row(index: int, step: dict[str, Any], map_steps: dict[str, dict[str, A
 def _status_badge(status: str) -> str:
     class_name = "status-failed" if status not in {"success", "failed", "error"} else f"status-{status}"
     return f'<span class="status {class_name}">{escape(status)}</span>'
+
+
+def _step_id(step: dict[str, Any]) -> str:
+    return str(step.get("id") or step.get("name") or step.get("step") or "unknown")
+
+
+def _downstream_for(step_id: str, map_steps: dict[str, dict[str, Any]]) -> list[Any]:
+    return list(map_steps.get(step_id, {}).get("downstream", []))
+
+
+def _relevant_files(
+    failed_step: dict[str, Any] | None,
+    downstream: list[Any],
+    steps: list[dict[str, Any]],
+    map_steps: dict[str, dict[str, Any]],
+) -> list[str]:
+    files: list[str] = []
+    _append_file(files, failed_step.get("source") if failed_step else None)
+    steps_by_id = {_step_id(step): step for step in steps}
+    for item in downstream:
+        step_id = str(item)
+        _append_file(files, steps_by_id.get(step_id, {}).get("source"))
+        _append_file(files, map_steps.get(step_id, {}).get("source"))
+    return files[:5]
+
+
+def _append_file(files: list[str], source: Any) -> None:
+    if source and str(source) not in files:
+        files.append(str(source))
 
 
 def _inline_list(items: Any) -> str:
