@@ -21,7 +21,7 @@ def handle_message(message: dict[str, Any]) -> dict[str, Any] | None:
             {
                 "protocolVersion": PROTOCOL_VERSION,
                 "capabilities": {"tools": {}},
-                "serverInfo": {"name": "flowguard", "version": "0.3.0"},
+                "serverInfo": {"name": "flowguard", "version": "1.0.0"},
             },
         )
     if method == "tools/list":
