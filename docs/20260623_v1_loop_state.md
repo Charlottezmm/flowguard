@@ -6,22 +6,19 @@ Last updated: 2026-06-23 Asia/Shanghai
 
 - Goal: ship FlowGuard v1.0 by freezing the local repair loop and proving a new
   user can complete it end to end.
-- Current objective: PR1 - v1 Contract Spec
+- Current objective: PR2 - Runtime API Freeze Tests
 - Status: pr_open
-- Branch: `codex/flowguard-v1-contract-spec`
-- PR: https://github.com/Charlottezmm/flowguard/pull/20
-- Last automation tick: 2026-06-23 Asia/Shanghai, first manual tick after
-  heartbeat creation.
-- Next action: wait for PR1 review, GitHub CI, and merge gates. Do not start
-  PR2 until PR1 is merged.
+- Branch: `codex/flowguard-runtime-api-freeze-tests`
+- PR: https://github.com/Charlottezmm/flowguard/pull/21
+- Last automation tick: 2026-06-23T12:00:08Z heartbeat.
+- Next action: wait for PR2 GitHub CI and merge gates. Do not start PR3 until
+  PR2 is merged.
 
 ## Verification Evidence
 
-- Local working-tree verification for current objective, before PR creation:
-- Targeted docs test:
-  `PYTHONPATH=src .venv/bin/python -m pytest tests/test_docs.py` passed, 3
-  tests.
-- Full tests: `PYTHONPATH=src .venv/bin/python -m pytest` passed, 61 tests.
+- Targeted tests: `PYTHONPATH=src .venv/bin/python -m pytest
+  tests/test_runtime.py tests/test_expectations.py` passed, 13 tests.
+- Full tests: `PYTHONPATH=src .venv/bin/python -m pytest` passed, 62 tests.
 - Compile check: `.venv/bin/python -m compileall src tests examples` passed.
 - Demo artifact check: demo generated only `trace.json`, `workflow_map.json`,
   `agent_context.md`, and `outcome_report.html`.
@@ -29,8 +26,8 @@ Last updated: 2026-06-23 Asia/Shanghai
   intentional failure `issue.triage`.
 - Boundary check: no `contracts.json` or `failed_contracts.md` found.
 - PR merge gate: pending GitHub CI and final merge.
-- Last completed objective: PR0 merged in
-  https://github.com/Charlottezmm/flowguard/pull/19.
+- Last completed objective: PR1 merged in
+  https://github.com/Charlottezmm/flowguard/pull/20.
 
 ## Blockers
 
@@ -39,7 +36,7 @@ Last updated: 2026-06-23 Asia/Shanghai
 ## Objective Queue
 
 - [x] PR0: Loop Engineer Operating Contract
-- [ ] PR1: v1 Contract Spec
+- [x] PR1: v1 Contract Spec
 - [ ] PR2: Runtime API Freeze Tests
 - [ ] PR3: Artifact Schema Contract Tests
 - [ ] PR4: Repair Context Protocol Freeze
