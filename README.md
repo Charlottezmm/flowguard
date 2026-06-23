@@ -208,7 +208,9 @@ check-intent integration docs, and run comparison.
 - **v1.0**: frozen skill + runtime + read-only MCP, run comparison, stable
   repair-context protocol, real-world case study.
 
-For the detailed v1 plan, see [`docs/v1_scope.md`](docs/v1_scope.md).
+For the detailed v1 path, see [`docs/v1_scope.md`](docs/v1_scope.md). For the
+stable v1 contract source, see
+[`docs/20260623_v1_technical_design.md`](docs/20260623_v1_technical_design.md).
 
 ## License
 
