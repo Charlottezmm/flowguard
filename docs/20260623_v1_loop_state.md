@@ -1,18 +1,17 @@
 # FlowGuard v1 Loop State
 
-Last updated: 2026-06-23 23:12 Asia/Shanghai
+Last updated: 2026-06-23 23:19 Asia/Shanghai
 
 ## Current State
 
 - Goal: ship FlowGuard v1.0 by freezing the local repair loop and proving a new
   user can complete it end to end.
 - Current objective: PR9 - v1.0 Release Cleanup
-- Status: pr_open
-- Branch: `codex/flowguard-v1-release-cleanup`
-- PR: https://github.com/Charlottezmm/flowguard/pull/28
+- Status: complete
+- Branch: `main`
+- PR: https://github.com/Charlottezmm/flowguard/pull/28 merged.
 - Last automation tick: 2026-06-23T14:20:38Z heartbeat.
-- Next action: merge PR9 after fresh verification and GitHub CI pass, then tag
-  `v1.0.0` and create the GitHub release.
+- Next action: none after the `v1.0.0` tag and GitHub release are created.
 
 ## Verification Evidence
 
@@ -45,10 +44,10 @@ Last updated: 2026-06-23 23:12 Asia/Shanghai
   be merged after fresh verification and GitHub CI pass, then `v1.0.0` may be
   tagged and published as a GitHub release. No PyPI or other package registry
   publish is authorized by this policy.
-- PR merge gate: pending fresh verification and GitHub CI after recording the
-  release policy.
-- Last completed objective: PR8 merged in
-  https://github.com/Charlottezmm/flowguard/pull/27.
+- PR merge gate: PR9 merged in https://github.com/Charlottezmm/flowguard/pull/28
+  after fresh local verification and GitHub CI passed.
+- Last completed objective: PR9 merged in
+  https://github.com/Charlottezmm/flowguard/pull/28.
 
 ## Blockers
 
@@ -65,7 +64,7 @@ Last updated: 2026-06-23 23:12 Asia/Shanghai
 - [x] PR6: Clean Environment Quickstart
 - [x] PR7: Real Or Near-real Case Study
 - [x] PR8: Screenshot-ready Outcome Report
-- [ ] PR9: v1.0 Release Cleanup
+- [x] PR9: v1.0 Release Cleanup
 
 ## Loop Notes
 

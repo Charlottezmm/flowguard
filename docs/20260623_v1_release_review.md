@@ -2,14 +2,16 @@
 
 Date: 2026-06-23
 Release: `v1.0.0`
-Release/tag/publish status: not authorized yet
+Release/tag/publish status: approved for GitHub release; no package registry
+publish authorized
 
 ## Release Result
 
-FlowGuard v1.0.0 is prepared for release review.
+FlowGuard v1.0.0 is approved for GitHub release.
 
-This PR does not create a tag, publish a package, or create a GitHub release.
-Those steps require an explicit release/tag/publish policy.
+The release policy authorizes creating and pushing the `v1.0.0` tag and
+creating a GitHub release from this review document. It does not authorize PyPI
+or any other package registry publication.
 
 ## What Is Frozen For v1
 
@@ -85,8 +87,8 @@ v1.0.0 stays within the intended product boundary:
 
 ## Release Authorization
 
-The release cleanup PR may be reviewed and merged, but release publication is
-blocked until an explicit policy authorizes the following commands:
+The project owner approved the v1.0.0 GitHub release on 2026-06-23. The
+authorized commands are:
 
 ```bash
 git tag v1.0.0
@@ -94,4 +96,4 @@ git push origin v1.0.0
 gh release create v1.0.0 --title "FlowGuard v1.0.0" --notes-file docs/20260623_v1_release_review.md
 ```
 
-Until that policy exists, stop before tagging or publishing.
+No package registry publish is authorized by this release policy.
