@@ -74,6 +74,7 @@ def test_create_and_compare_golden(tmp_path, monkeypatch) -> None:
     assert baseline_path == Path(".flowguard/goldens/demo/default/baseline.json")
     baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
     assert baseline["schema_version"] == "flowguard.golden.v0.3"
+    assert baseline["schema_version"] != "legacy-v0.2"
     result = compare_golden("demo", "default")
     assert result.passed is True
     assert result.differences == []

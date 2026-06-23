@@ -42,6 +42,20 @@ def test_query_loads_latest_artifacts(tmp_path, monkeypatch) -> None:
     assert summarize_run() == {"workflow": "demo", "run_id": "latest", "status": "failed", "failed_step": "demo.step"}
 
 
+def test_query_loads_legacy_v02_trace_and_workflow_map_without_schema_version(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    run_dir = Path(".flowguard/runs/latest")
+    run_dir.mkdir(parents=True)
+    (run_dir / "trace.json").write_text(
+        json.dumps({"run_id": "latest", "workflow": "demo", "steps": []}),
+        encoding="utf-8",
+    )
+    (run_dir / "workflow_map.json").write_text(json.dumps({"workflow": "demo", "steps": []}), encoding="utf-8")
+
+    assert load_latest_run()["workflow"] == "demo"
+    assert load_workflow_map()["workflow"] == "demo"
+
+
 def test_query_rejects_unknown_future_trace_schema(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
     run_dir = Path(".flowguard/runs/latest")
