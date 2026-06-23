@@ -4,6 +4,11 @@
 > superpowers:subagent-driven-development or an equivalent fresh-worker loop to
 > implement this plan one PR at a time. Do not start the next PR until the
 > current PR is reviewed, verified, and merged.
+>
+> **Loop contract:** Autonomous execution must follow
+> `docs/20260623_loop_engineer_contract.md`. Persist objective state in
+> `docs/20260623_v1_loop_state.md` so scheduled workers can resume without
+> relying on chat history.
 
 **Goal:** Ship FlowGuard v1.0 by freezing the existing local repair loop and
 proving that a new user can complete it end to end.
@@ -452,8 +457,8 @@ git commit -m "style: improve outcome report for v1"
 
 ### PR 9: v1.0 Release Cleanup
 
-**Goal:** Prepare and publish the v1.0.0 release after all contract and usability
-work is merged.
+**Goal:** Prepare the v1.0.0 release after all contract and usability work is
+merged, then publish only if an explicit release policy is approved.
 
 **Files:**
 
@@ -501,7 +506,10 @@ work is merged.
    git commit -m "chore: prepare v1.0.0 release"
    ```
 
-8. Tag and publish only after review:
+8. Tag and publish only after review and only if the loop state or project
+   owner provides an explicit release/tag/publish policy. Without that policy,
+   stop after the release review PR is merged and report that v1 is ready for
+   release authorization:
 
    ```bash
    git tag v1.0.0
@@ -512,8 +520,11 @@ work is merged.
 
 **Acceptance:**
 
-- v1.0.0 is tagged.
-- GitHub release is published.
+- If release/tag/publish policy is approved, `v1.0.0` is tagged and the GitHub
+  release is published.
+- If release/tag/publish policy is not approved, the release cleanup PR is
+  merged, the release review records verification evidence, and the loop stops
+  before tagging or publishing.
 - Release review records verification evidence.
 
 ## Final v1 Acceptance Checklist
@@ -532,5 +543,5 @@ work is merged.
 - [ ] Full test suite passes.
 - [ ] `python -m compileall src tests examples` passes.
 - [ ] `git diff --check` passes.
-- [ ] `v1.0.0` tag and release are published.
-
+- [ ] `v1.0.0` tag and release are published after explicit release policy, or
+  release-ready status is recorded and the loop stops before publish.
