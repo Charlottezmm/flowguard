@@ -3,6 +3,11 @@
 This document defines the path from v0.2 to v1.0. It translates
 `docs/positioning.md` into versioned deliverables and explicit non-goals.
 
+The v1 contract source is
+[`docs/20260623_v1_technical_design.md`](20260623_v1_technical_design.md).
+Use that document for the stable runtime, artifact, query, MCP, repair-context,
+and release-boundary contract.
+
 ## v1 Definition
 
 FlowGuard v1 freezes a local, agent-native handoff loop:

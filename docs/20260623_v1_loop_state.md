@@ -6,18 +6,21 @@ Last updated: 2026-06-23 Asia/Shanghai
 
 - Goal: ship FlowGuard v1.0 by freezing the local repair loop and proving a new
   user can complete it end to end.
-- Current objective: PR0 - Loop Engineer Operating Contract
+- Current objective: PR1 - v1 Contract Spec
 - Status: pr_open
-- Branch: `codex/flowguard-loop-contract`
-- PR: https://github.com/Charlottezmm/flowguard/pull/19
-- Last automation tick:
-- Next action: wait for PR0 review and merge status. Do not start PR1 until PR0
-  is merged.
+- Branch: `codex/flowguard-v1-contract-spec`
+- PR: https://github.com/Charlottezmm/flowguard/pull/20
+- Last automation tick: 2026-06-23 Asia/Shanghai, first manual tick after
+  heartbeat creation.
+- Next action: wait for PR1 review, GitHub CI, and merge gates. Do not start
+  PR2 until PR1 is merged.
 
 ## Verification Evidence
 
-- Targeted tests: `PYTHONPATH=src .venv/bin/python -m pytest tests/test_docs.py`
-  passed, 3 tests.
+- Local working-tree verification for current objective, before PR creation:
+- Targeted docs test:
+  `PYTHONPATH=src .venv/bin/python -m pytest tests/test_docs.py` passed, 3
+  tests.
 - Full tests: `PYTHONPATH=src .venv/bin/python -m pytest` passed, 61 tests.
 - Compile check: `.venv/bin/python -m compileall src tests examples` passed.
 - Demo artifact check: demo generated only `trace.json`, `workflow_map.json`,
@@ -25,6 +28,9 @@ Last updated: 2026-06-23 Asia/Shanghai
 - Agent context readback: `.flowguard/runs/latest/agent_context.md` reports
   intentional failure `issue.triage`.
 - Boundary check: no `contracts.json` or `failed_contracts.md` found.
+- PR merge gate: pending GitHub CI and final merge.
+- Last completed objective: PR0 merged in
+  https://github.com/Charlottezmm/flowguard/pull/19.
 
 ## Blockers
 
@@ -32,7 +38,7 @@ Last updated: 2026-06-23 Asia/Shanghai
 
 ## Objective Queue
 
-- [ ] PR0: Loop Engineer Operating Contract
+- [x] PR0: Loop Engineer Operating Contract
 - [ ] PR1: v1 Contract Spec
 - [ ] PR2: Runtime API Freeze Tests
 - [ ] PR3: Artifact Schema Contract Tests

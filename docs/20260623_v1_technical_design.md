@@ -1,7 +1,7 @@
 # FlowGuard v1 Technical Design
 
 Date: 2026-06-23
-Status: Proposed
+Status: Contract source
 
 ## Purpose
 
@@ -448,4 +448,3 @@ Additional release checks:
 Do not create a v0.4 by default. Create a v0.4 only if a concrete issue appears
 that blocks v1 readiness, is too large for a small hardening PR, and does not
 belong naturally inside v1 stabilization.
-
