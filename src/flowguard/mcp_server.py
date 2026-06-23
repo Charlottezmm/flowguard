@@ -28,7 +28,13 @@ def handle_message(message: dict[str, Any]) -> dict[str, Any] | None:
         return _response(message_id, {"tools": _tools()})
     if method == "tools/call":
         params = message.get("params", {})
-        return _response(message_id, _call_tool(str(params.get("name", ""))))
+        tool_name = str(params.get("name", ""))
+        try:
+            return _response(message_id, _call_tool(tool_name))
+        except KeyError:
+            return _error(message_id, -32602, f"Unknown FlowGuard MCP tool: {tool_name}")
+        except (FileNotFoundError, ValueError) as exc:
+            return _error(message_id, -32001, str(exc))
     if method == "ping":
         return _response(message_id, {})
     return _error(message_id, -32601, f"Unsupported method: {method}")
@@ -75,18 +81,15 @@ def _tools() -> list[dict[str, Any]]:
 
 
 def _call_tool(name: str) -> dict[str, Any]:
-    try:
-        if name == "flowguard_latest_status":
-            return _tool_text(json.dumps(summarize_run(), ensure_ascii=False))
-        if name == "flowguard_failed_step":
-            return _tool_text(json.dumps(find_failed_step(), ensure_ascii=False))
-        if name == "flowguard_workflow_map":
-            return _tool_text(json.dumps(load_workflow_map(), ensure_ascii=False))
-        if name == "flowguard_agent_context":
-            return _tool_text(load_agent_context())
-    except Exception as exc:
-        return _tool_text(str(exc), is_error=True)
-    return _tool_text(f"Unknown tool: {name}", is_error=True)
+    if name == "flowguard_latest_status":
+        return _tool_text(json.dumps(summarize_run(), ensure_ascii=False))
+    if name == "flowguard_failed_step":
+        return _tool_text(json.dumps(find_failed_step(), ensure_ascii=False))
+    if name == "flowguard_workflow_map":
+        return _tool_text(json.dumps(load_workflow_map(), ensure_ascii=False))
+    if name == "flowguard_agent_context":
+        return _tool_text(load_agent_context())
+    raise KeyError(name)
 
 
 def _tool_text(text: str, is_error: bool = False) -> dict[str, Any]:
